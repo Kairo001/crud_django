@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+
+{% endblock %}
+
+{% block content %}
+    <h2 class="text-center">Lista de empresas</h2>
+    <div class="col-md-8 mx-auto row mt-4" id="item-container"></div>
+    <div id="request-target"></div>
+{% endblock %}
+{% block extra_js %}
+<script>
+    const requestTarget = document.querySelector('#request-target');
+    const itemContainer = document.querySelector('#item-container');
+    const intersectionOptions = {
+        threshold: 1
+    }
+
+    let apiUrl = window.location.origin + "/empresa/scroll/"
+    apiUrl = new URL(apiUrl)
+    apiUrl.searchParams.append('page', 1)
+    let loading = false;
+
+    const onIntersect = ([entry]) => {
+        if(apiUrl && !loading && entry.isIntersecting)
+            makeRequest();
+    }
+
+    const makeRequest = async () => {
+        requestTarget.style.display = 'none'
+        loading = true
+        let response = await fetch(apiUrl)
+        response = await response.json()
+        console.log(response)
+        if(!response['success']){
+            apiUrl = null
+        } else {
+            apiUrl.searchParams.set('page', response.page)
+            renderItems(response.empresas)
+        }
+        loading = false
+        requestTarget.style.display = 'block'
+    }
+
+    const renderItems = results => {
+        results.forEach(item => {
+            itemContainer.appendChild(createItem(item));
+        });
+    }
+
+    const createItem = item => {
+        let url = window.location.origin + "/empresa/update/" + item.id + "/" 
+        const newItem = document.createElement('div')
+        newItem.classList.add('col-md-4', 'mt-3')
+        newItem.setAttribute('id', item.id)
+        newItem.innerHTML = (
+            `
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">
+                        <strong>${item.nombre}</strong>
+                    </h5>
+                    <h6 class="card-subtitle mb-2 text-muted">${item.nit}</h6>
+                    <p class="card-text mb-0">Dirección: ${item.direccion} </p>
+                    <p class="card-text">Teléfono: ${item.telefono} </p>
+                    <div class="row mt-3">
+                        <div class="col-md-6 d-flex justify-content-center">
+                            <a href="${url}" class="btn btn-primary">Editar</a>
+                        </div>
+                        <div class="col-md-6 d-flex justify-content-center">
+                            <button class="btn btn-danger" onclick="borrarEmpresa(${item.id})">Borrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `
+        )
+        return newItem;
+    }
+
+    let observer = new IntersectionObserver(onIntersect, intersectionOptions)
+
+    observer.observe(requestTarget)
+
+    const borrarEmpresa = async id => {
+        let url = window.location.origin + "/empresa/delete/" + id + "/"
+        let response = await fetch(url, {
+            method: "POST",
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        response = await response.json()
+        console.log(response)
+        let div = document.getElementById(id)
+        div.parentNode.removeChild(div)
+        const toast = document.querySelector("#liveToast")
+        toast.show()
+    }
+
+</script>
+
+{% endblock %}

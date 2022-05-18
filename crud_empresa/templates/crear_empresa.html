@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="col-md-6 mx-auto">
+        <div class="card" style="border-radius: 15px;">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-floating m-3">
+                        <input type="text" class="form-control" name="nit" id="id_nit" maxlength="20" 
+                            required placeholder="800.197.268-4">
+                        <label for="id_nit">Nit de la empresa</label>
+                        {% for error in form.nit.errors %}
+                            <p class="text-danger">{{ error }}</p>
+                        {% endfor %}
+
+                    </div>
+                    <div class="form-floating m-3">
+                        <input type="text" class="form-control" name="nombre" maxlength="64" required="" id="id_nombre" placeholder="Nombre de la empresa">
+                        <label for="id_nombre">Nombre de la empresa</label>
+                        {% for error in form.nombre.errors %}
+                            <p class="text-danger">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    <div class="form-floating m-3">
+                        <input type="text" class="form-control" name="telefono" maxlength="20" id="id_telefono" placeholder="Teléfono de la empresa">
+                        <label for="id_telefono">Teléfono de la empresa</label>
+                        {% for error in form.telefono.errors %}
+                            <p class="text-danger">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    <div class="form-floating m-3">
+                        <input type="text" class="form-control" name="direccion" maxlength="32" required="" id="id_direccion" placeholder="Dirección de la empresa">
+                        <label for="id_direccion">Dirección de la empresa</label>
+                        {% for error in form.direccion.errors %}
+                            <p class="text-danger">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn btn-secondary">
+                            Guardar Empresa
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+    const inputNit = document.querySelector("#id_nit")
+    inputNit.addEventListener('change', async (e) => {
+        const url = window.location.origin + '/empresa/buscar_nit/' + "?nit=" + e.target.value
+        let response = await fetch(url, {method:'GET'})
+        console.log(response)
+        response = await response.json()
+        if(response.existe === true) {
+            inputNit.value = ''
+        }
+    })
+</script>
+{% endblock %}
