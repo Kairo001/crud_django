@@ -29,11 +29,10 @@ class Empresa(BaseModel):
     )
 
     class Meta:
-        """Meta definition for Product."""
+        """Definición meta para Empresa."""
 
         verbose_name = 'Empresa'
         verbose_name_plural = 'Empresas'
 
     def __str__(self):
-        """Unicode representation of Product."""
         return self.nombre

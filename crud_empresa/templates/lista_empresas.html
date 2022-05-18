@@ -20,13 +20,19 @@
     let apiUrl = window.location.origin + "/empresa/scroll/"
     apiUrl = new URL(apiUrl)
     apiUrl.searchParams.append('page', 1)
-    let loading = false;
+    let loading = false
 
+    /**
+     * Función que se ejecuta cuando un elemento, ubicado en la parte de abajo de la página, es visible.
+    */
     const onIntersect = ([entry]) => {
         if(apiUrl && !loading && entry.isIntersecting)
             makeRequest();
     }
 
+    /**
+     * Función que se ejecuta cuando se cumplen las tres condiciones para ir al backend y consultar más empresas.
+     */ 
     const makeRequest = async () => {
         requestTarget.style.display = 'none'
         loading = true
@@ -43,12 +49,20 @@
         requestTarget.style.display = 'block'
     }
 
+    /**
+     * Función para añadir las empresas retornadas por el backend en la página.
+     * @param {Array} results - Mensajes traidos del back end en formato Json
+     */
     const renderItems = results => {
         results.forEach(item => {
             itemContainer.appendChild(createItem(item));
         });
     }
 
+    /**
+     * Función para crear el elemento que pinta el mensaje.
+     * @param {Object} item - Mensaje en formato objecto
+     */ 
     const createItem = item => {
         let url = window.location.origin + "/empresa/update/" + item.id + "/" 
         const newItem = document.createElement('div')
@@ -83,6 +97,10 @@
 
     observer.observe(requestTarget)
 
+    /**
+     * Función para borrar una empresa eliminando su elemento y cambiado su estado en el backend
+     * @param {Number} id - Id de la empresa
+     */ 
     const borrarEmpresa = async id => {
         let url = window.location.origin + "/empresa/delete/" + id + "/"
         let response = await fetch(url, {
