@@ -1,8 +1,7 @@
 """Vistas de la app de crud_empresa"""
 
 # Django
-from pipes import Template
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.views.generic import CreateView, View, ListView, TemplateView, UpdateView
 from django.urls import reverse_lazy
 
@@ -30,7 +29,7 @@ class BuscarNitView(View):
         response = {}
         nit = request.GET.get('nit')
 
-        if Empresa.objects.filter(nit=nit).exists():
+        if Empresa.objects.filter(nit=nit, is_active=True).exists():
             response['existe'] = True
         else:
             response['existe'] = False

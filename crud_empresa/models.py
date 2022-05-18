@@ -9,11 +9,7 @@ from utils.models import BaseModel
 
 class Empresa(BaseModel):
     """Modelo de Empresa."""
-    nit = models.CharField('Nit de la empresa', max_length=20, unique=True,
-        error_messages={
-            'unique': 'Ya existe una empresa con este Nit.'
-        }
-    )
+    nit = models.CharField('Nit de la empresa', max_length=20)
     nombre = models.CharField('Nombre de la empresa', max_length=64)
     direccion = models.CharField('Dirección de la empresa', max_length=32)
     
